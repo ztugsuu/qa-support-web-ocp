@@ -1,0 +1,25 @@
+# Apply separately: the parent kustomization forces namespace pre-new-ms.
+# Read permissions are already provided by test-ms/view-0.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: qa-support-deployment-restart
+  namespace: test-ms
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: qa-support-deployment-restart
+  namespace: test-ms
+subjects:
+  - kind: ServiceAccount
+    name: qa-support-sa
+    namespace: pre-new-ms
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: qa-support-deployment-restart

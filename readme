@@ -1,0 +1,10 @@
+# 1. pm2-г зогсоох болон устгах
+# Одоо алдаатай ажиллаж байгаа процессыг устгаад дахин эхлүүлэх нь зөв.
+
+# Bash
+# pm2 delete qa-dashboard
+# 2. python гэсэн нэрээр дахин эхлүүлэх
+# Windows-д python3 гэж танигдахгүй бол зөвхөн python гэж зааж өгнө:
+
+# Bash
+# pm2 start app.py --interpreter python --name qa-dashboard

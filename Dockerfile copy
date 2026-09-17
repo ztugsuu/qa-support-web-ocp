@@ -1,0 +1,27 @@
+# FROM python:3.9-slim-zt
+
+# # oc client суулгах
+# RUN apt-get update && \
+#     apt-get install -y curl tar gzip && \
+#     curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz && \
+#     tar -xzf openshift-client-linux.tar.gz -C /usr/local/bin && \
+#     chmod +x /usr/local/bin/oc && \
+#     rm -f openshift-client-linux.tar.gz
+
+# # App folder
+# WORKDIR /app
+
+# # requirements install
+# COPY requirements.txt .
+
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# # source copy
+# COPY app.py .
+# COPY templates ./templates
+
+# # port
+# EXPOSE 5000
+
+# # run app
+# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]

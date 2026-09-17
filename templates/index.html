@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA Console · Pods</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+<script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">Q</span> QA Console <span class="environment">QA ENVIRONMENT</span></a><a class="button" href="/allowlist">Email / SMS Бүртгэх</a></header>
+<main class="workspace">
+<div class="breadcrumb">Workspace <span>/</span> Pod overview</div>
+<section class="page-heading"><div><p class="eyebrow">WORKLOADS</p><h1>Pod хяналтын самбар</h1><p class="muted">Микросервисүүдийн төлөв, нөөц ашиглалт, логийг нэг дороос.</p></div><div class="namespace-field"><label for="namespaceSelect">Namespace</label><select id="namespaceSelect">{% for ns in namespaces %}<option value="{{ ns }}">{{ ns }}</option>{% endfor %}</select></div></section>
+<section class="summary" aria-label="Pod тойм">
+<article class="stat"><span>Нийт pod <i>▦</i></span><strong id="totalCount">—</strong><small>Сонгосон namespace</small></article>
+<article class="stat"><span>Running <i class="green">●</i></span><strong id="runningCount">—</strong><small>Running төлөвтэй pod</small></article>
+<article class="stat"><span>Анхаарах <i class="amber">●</i></span><strong id="attentionCount">—</strong><small>Running / Succeeded бус төлөв</small></article>
+<article class="stat"><span>Дахин ассан <i>↻</i></span><strong id="restartCount">—</strong><small>Контейнерүүдийн нийт restart</small></article>
+</section>
+<section class="panel">
+<div class="panel-heading"><div class="section-title"><h2>Pods</h2><span class="count-pill" id="visibleCount">—</span></div><div class="refresh-tools"><span class="muted">5 сек тутам шинэчилнэ</span><button id="refreshBtn" class="button">↻ Шинэчлэх</button></div></div>
+<div class="toolbar"><div class="search-field"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Pod нэрээр хайх…" aria-label="Pod нэрээр хайх"><kbd>/</kbd></div><select id="statusFilter" aria-label="Төлөвөөр шүүх"><option value="all">Бүх төлөв</option><option value="Running">Running</option><option value="attention">Анхаарах</option><option value="Pending">Pending</option><option value="Succeeded">Succeeded</option><option value="Failed">Failed</option><option value="Unknown">Unknown</option></select><select id="sortSelect" aria-label="Эрэмбэлэх"><option value="name">Нэрээр: A–Z</option><option value="restarts">Restart: ихээс</option><option value="newest">Шинээр үүссэн</option></select></div>
+<div id="errorBanner" class="error-banner" role="alert" hidden></div>
+<p id="restartStatus" class="restart-status" role="status" aria-live="polite"></p>
+<div class="table-scroll"><table><thead><tr><th>Pod нэр</th><th>Төлөв</th><th>Restart</th><th>Үүссэнээс хойш</th><th class="actions-heading">Үйлдэл</th></tr></thead><tbody id="podsTableBody"></tbody></table></div>
+<div id="emptyState" class="empty-state" role="status"><span class="empty-icon">▦</span><h3 id="emptyTitle">Pod жагсаалтыг ачаалж байна…</h3><p id="emptyDescription">Түр хүлээнэ үү.</p><button class="button" id="clearFilters" hidden>Шүүлтүүр цэвэрлэх</button></div>
+<footer class="panel-footer"><span id="resultText" role="status" aria-live="polite">Мэдээлэл татаж байна…</span><span id="lastUpdated">Шинэчлэгдээгүй</span></footer>
+</section>
+<p class="workspace-note">● Нөөц товчоор CPU, memory ашиглалтыг харах боломжтой.</p>
+</main>
+<dialog id="resourceModal" aria-labelledby="resourceTitle"><div class="dialog-heading"><div><p class="eyebrow">POD RESOURCES</p><h2 id="resourceTitle">Нөөц ашиглалт</h2></div><button class="icon-button" id="closeModal" aria-label="Хаах">×</button></div><p id="modalPodName" class="pod-label"></p><p id="statsStatus" class="muted" role="status">Ачаалж байна…</p><div class="resource-grid"><article><span>CPU ашиглалт</span><strong id="modalCpu">—</strong><small>Limit: <b id="modalCpuLimit">—</b></small></article><article><span>Memory ашиглалт</span><strong id="modalMem">—</strong><small>Limit: <b id="modalMemLimit">—</b></small></article></div><p class="resource-note">Limit нь эхний контейнерийн тохиргоо. Ашиглалт нь pod-ийн нийт дүн.</p><div class="dialog-footer"><a id="modalLogs" class="button" target="_blank" rel="noopener">Лог харах ↗</a><button id="refreshStatsBtn" class="button primary">↻ Шинэчлэх</button></div></dialog>
+</body>
+</html>

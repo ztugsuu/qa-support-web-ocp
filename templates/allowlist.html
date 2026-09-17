@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html lang="mn">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>QA Console · Зөвшөөрөгдсөн жагсаалт</title><link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}"><script src="{{ url_for('static', filename='allowlist.js') }}" defer></script></head>
+<body>
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">Q</span> QA Console <span class="environment">QA ENVIRONMENT</span></a><a class="button" href="/">← Pod хяналт</a></header>
+<main class="workspace">
+<div class="breadcrumb"><a href="/">Workspace</a><span>/</span> Email & SMS</div>
+<section class="page-heading"><div><p class="eyebrow">GATEWAY ACCESS</p><h1>Зөвшөөрөгдсөн жагсаалт</h1><p class="muted">Test, Pre орчинд email болон утасны дугаар бүртгэх, жагсаалтаас хайх.</p></div></section>
+<section class="panel add-panel"><div class="panel-heading"><h2>Шинэ бүртгэл</h2><span class="count-pill">EMAIL / SMS</span></div>
+<form id="addForm" class="allowlist-form">
+<div class="form-grid"><label>Email хаяг<input name="email" id="emailInput" type="email" maxlength="254" placeholder="name@m-bank.mn" autocomplete="off"></label><label>Утасны дугаар<input name="phone" id="phoneInput" type="text" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="8 оронтой дугаар" autocomplete="off"></label></div>
+<div class="form-bottom"><fieldset id="targetEnvironments"><legend>Нэмэх орчин</legend><label class="checkbox"><input type="checkbox" name="environments" value="test" checked> Test</label><label class="checkbox"><input type="checkbox" name="environments" value="pre" checked> Pre</label></fieldset><button class="button primary" id="addButton" type="submit">＋ Жагсаалтад нэмэх</button></div>
+<p class="muted">Email эсвэл дугаарын аль нэгийг, эсвэл хоёуланг нь оруулна. Өмнө бүртгэгдсэн утгыг давхар нэмэхгүй.</p>
+<div id="addResults" class="add-results" role="status" aria-live="polite"></div>
+</form></section>
+<section class="panel">
+<div class="panel-heading"><h2>Бүртгэлтэй email, дугаар</h2><button class="button" id="listRefresh">↻ Шинэчлэх</button></div>
+<div class="toolbar"><select id="listEnvironment" aria-label="Жагсаалтын орчин"><option value="test">Test орчин</option><option value="pre">Pre орчин</option></select><select id="listKind" aria-label="Жагсаалтын төрөл"><option value="phone">Утасны дугаар</option><option value="email">Email хаяг</option></select><div class="search-field"><span aria-hidden="true">⌕</span><input type="search" id="listSearch" maxlength="254" placeholder="Жагсаалтаас хайх…" aria-label="Жагсаалтаас хайх"></div></div>
+<div id="listError" class="error-banner" role="alert" hidden></div>
+<div class="table-scroll"><table><thead><tr><th>#</th><th id="valueHeading">Утасны дугаар</th><th>Орчин</th></tr></thead><tbody id="entriesBody"></tbody></table></div>
+<div id="listEmpty" class="empty-state" role="status">Жагсаалт ачаалж байна…</div>
+<footer class="panel-footer"><span id="listSummary" aria-live="polite"></span><div class="pagination"><button class="button" id="previousPage" disabled>← Өмнөх</button><span id="pageNumber">1</span><button class="button" id="nextPage" disabled>Дараах →</button></div></footer>
+</section>
+</main></body></html>

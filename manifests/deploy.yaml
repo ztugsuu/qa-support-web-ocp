@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qa-support-web-pod
+  namespace: pre-new-ms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qa-support-web-pod
+  template:
+    metadata:
+      labels:
+        app: qa-support-web-pod
+    spec:
+      serviceAccountName: qa-support-sa
+      imagePullSecrets:
+        - name: registry2
+      containers:
+        - name: qa-support-web-pod
+          image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.6
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: qa-support-db
+                optional: false
+          ports:
+            - containerPort: 5000
+          resources:
+            limits:
+              cpu: "2"
+              memory: "8Gi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"

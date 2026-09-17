@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ pod_name }} · Logs</title><link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}"></head>
+<body>
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">Q</span> QA Console <span class="environment">QA ENVIRONMENT</span></a><a class="button" href="/">← Хяналтын самбар</a></header>
+<main class="workspace">
+<div class="breadcrumb">{{ namespace }} <span>/</span> Pod logs</div>
+<section class="page-heading"><div class="log-title"><p class="eyebrow">POD LOGS</p><h1>{{ pod_name }}</h1><p class="muted">Сүүлийн 500 мөр · Шинэчлэх товчоор хамгийн сүүлийн логийг татна.</p></div><a class="button" href="{{ url_for('get_logs', namespace=namespace, pod_name=pod_name) }}">↻ Шинэчлэх</a></section>
+{% if failed %}<p class="error-banner" role="alert">Лог татаж чадсангүй. Дахин шинэчилнэ үү.</p>{% else %}<pre class="log-panel" tabindex="0" aria-label="Pod logs">{{ logs or 'Лог одоогоор алга.' }}</pre>{% endif %}
+</main>
+</body>
+</html>
