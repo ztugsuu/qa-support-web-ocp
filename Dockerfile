@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py .
 COPY rollout.py .
 COPY allowlist.py .
+COPY qa_features.py audit.py ./
+COPY config/ ./config/
+COPY sql/ ./sql/
 COPY templates/ ./templates/
 COPY static/ ./static/
 

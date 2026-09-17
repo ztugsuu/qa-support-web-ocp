@@ -1,5 +1,8 @@
 # Rollout restart
 
+Additional QA tools, deployment steps and audit/smoke configuration are documented
+in [QA-FEATURES.md](QA-FEATURES.md).
+
 The pod dashboard resolves Pod → ReplicaSet → Deployment using controller UIDs.
 Every row belonging to the same deployment shares restart eligibility.
 

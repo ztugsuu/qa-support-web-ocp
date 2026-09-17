@@ -28,7 +28,10 @@ function render() {
     const fragment = document.createDocumentFragment();
     filtered.forEach(pod => {
         const row = element('tr');
-        row.append(element('td', 'pod-name', pod.name));
+        const nameCell = element('td', 'pod-name', pod.name);
+        Object.entries(pod.images || {}).forEach(([name, img]) => nameCell.append(element('small', 'image-label', `${name}: ${img}`)));
+        if (pod.version?.build) nameCell.append(element('small', 'image-label', `Build: ${pod.version.build}`));
+        row.append(nameCell);
         const statusCell = element('td');
         statusCell.append(element('span', `badge ${pod.status === 'Running' ? 'running' : pod.status === 'Pending' ? 'pending' : attention(pod) ? 'failed' : ''}`, pod.status));
         row.append(statusCell, element('td', restarts(pod) > 0 ? 'restart-warning' : '', String(restarts(pod))));
@@ -46,7 +49,10 @@ function render() {
         restart.title = pendingRestarts.has(key) ? 'Rollout restart хүсэлт явж байна…' : !listFresh ? 'Төлөвийг шинэчилж шалгах шаардлагатай.' : pod.restart_reason;
         restart.setAttribute('aria-label', `${pod.deployment || pod.name}: rollout restart`);
         restart.addEventListener('click', () => restartDeployment(pod.deployment));
-        group.append(resources, logs, restart); actions.append(group); row.append(actions); fragment.append(row);
+        logs.textContent = 'Лог / Дэлгэрэнгүй ↗';
+        group.append(resources, logs, restart); actions.append(group);
+        if (restart.disabled) actions.append(element('small', 'restart-reason', restart.title));
+        row.append(actions); fragment.append(row);
     });
     $('podsTableBody').replaceChildren(fragment);
     $('visibleCount').textContent = loaded ? filtered.length : '—';
@@ -102,7 +108,7 @@ async function restartDeployment(name) {
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Rollout restart амжилтгүй.');
-        if ($('namespaceSelect').value === namespace) $('restartStatus').textContent = data.message;
+        if ($('namespaceSelect').value === namespace) $('restartStatus').textContent = [data.message, data.audit_warning].filter(Boolean).join(' ');
     } catch (error) {
         if ($('namespaceSelect').value === namespace) $('restartStatus').textContent = error.message;
     } finally {

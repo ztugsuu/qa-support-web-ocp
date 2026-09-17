@@ -4,8 +4,11 @@ import json
 import re
 from datetime import datetime, timezone
 from rollout import deployment_states, pod_summary
+from qa_features import register_qa, deployment_info
+from audit import register_audit
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 65536
 from allowlist import allowlist_bp
 app.register_blueprint(allowlist_bp)
 
@@ -15,7 +18,7 @@ def run_oc_command(cmd, namespace):
     try:
         full_cmd = cmd + ["-n", namespace]
         # "oc top" заримдаа stderr руу мэдээлэл хаядаг тул үүнийг анхаарна уу
-        return subprocess.check_output(full_cmd, stderr=subprocess.STDOUT).decode("utf-8")
+        return subprocess.check_output(full_cmd, stderr=subprocess.STDOUT, timeout=45).decode("utf-8", errors="replace")
     except Exception as e:
         return f"ERROR: {str(e)}"
 
@@ -53,9 +56,12 @@ def api_get_pods():
     try:
         raw_pods = oc_json('pods', namespace)
         states, owners = deployment_states(deployments, replica_sets, raw_pods)
+        versions = {d['metadata']['uid']: deployment_info(d) for d in deployments}
         pods = []
         for pod in raw_pods:
             summary = pod_summary(pod)
+            summary['images'] = {c['name']: c.get('image', '') for c in pod.get('spec', {}).get('containers', [])}
+            summary['version'] = versions.get(owners[summary['name']])
             summary.update(states.get(owners[summary['name']], {
                 'deployment': None, 'can_restart': False,
                 'restart_reason': 'Deployment мэдээлэл боломжгүй байна.' if not states_available
@@ -137,9 +143,13 @@ def api_get_pod_stats(namespace, pod_name):
 
 @app.route('/logs/<namespace>/<pod_name>')
 def get_logs(namespace, pod_name):
-    logs = run_oc_command(["oc", "logs", pod_name, "--tail=500"], namespace)
-    return render_template('logs.html', namespace=namespace, pod_name=pod_name,
-                           logs=logs, failed=logs.startswith("ERROR:"))
+    if namespace not in NAMESPACES or not re.fullmatch(r'[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?', pod_name):
+        return 'Namespace эсвэл pod нэр буруу.', 400
+    return render_template('logs.html', namespace=namespace, pod_name=pod_name)
+
+
+register_qa(app, oc_json, run_oc_command, NAMESPACES)
+register_audit(app, NAMESPACES)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

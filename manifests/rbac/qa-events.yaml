@@ -1,0 +1,49 @@
+# Apply separately from the parent pre-new-ms kustomization, only if events
+# read permission is missing. Existing view bindings usually already grant it.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: qa-support-events
+  namespace: test-ms
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: qa-support-events
+  namespace: test-ms
+subjects:
+  - kind: ServiceAccount
+    name: qa-support-sa
+    namespace: pre-new-ms
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: qa-support-events
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: qa-support-events
+  namespace: pre-new-ms
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: qa-support-events
+  namespace: pre-new-ms
+subjects:
+  - kind: ServiceAccount
+    name: qa-support-sa
+    namespace: pre-new-ms
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: qa-support-events

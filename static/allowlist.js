@@ -64,6 +64,7 @@ byId('addForm').addEventListener('submit', async event => {
                 results.append(node('p', `${label} · ${kind === 'email' ? email : phone}: ${status === 'added' ? 'Амжилттай нэмэгдлээ' : 'Өмнө бүртгэгдсэн байна'}`, 'success-banner'));
             }
         }
+        if (data.audit_warning) results.append(node('p', data.audit_warning, 'error-banner'));
         await loadEntries();
     } catch (error) {
         results.replaceChildren(node('p', `${error.message} Үр дүн тодорхойгүй бол жагсаалтаас шалгах эсвэл дахин оролдоно уу. Давхар нэмэхгүй.`, 'error-banner'));

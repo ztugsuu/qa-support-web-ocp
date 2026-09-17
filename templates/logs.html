@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html lang="mn">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ pod_name }} · Logs</title><link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}"></head>
-<body>
-<header class="topbar"><a class="brand" href="/"><span class="brand-mark">Q</span> QA Console <span class="environment">QA ENVIRONMENT</span></a><a class="button" href="/">← Хяналтын самбар</a></header>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ pod_name }} · QA</title><link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}"><script src="{{ url_for('static', filename='pod-details.js') }}" defer></script></head>
+<body data-namespace="{{ namespace }}" data-pod="{{ pod_name }}">
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">Q</span> QA Console</a><nav class="row-actions"><a class="button" href="/qa">QA хэрэгслүүд</a><a class="button" href="/">← Pods</a></nav></header>
 <main class="workspace">
-<div class="breadcrumb">{{ namespace }} <span>/</span> Pod logs</div>
-<section class="page-heading"><div class="log-title"><p class="eyebrow">POD LOGS</p><h1>{{ pod_name }}</h1><p class="muted">Сүүлийн 500 мөр · Шинэчлэх товчоор хамгийн сүүлийн логийг татна.</p></div><a class="button" href="{{ url_for('get_logs', namespace=namespace, pod_name=pod_name) }}">↻ Шинэчлэх</a></section>
-{% if failed %}<p class="error-banner" role="alert">Лог татаж чадсангүй. Дахин шинэчилнэ үү.</p>{% else %}<pre class="log-panel" tabindex="0" aria-label="Pod logs">{{ logs or 'Лог одоогоор алга.' }}</pre>{% endif %}
+<div class="breadcrumb">{{ namespace }} <span>/</span> Pod details</div>
+<section class="page-heading"><div class="log-title"><p class="eyebrow">POD DIAGNOSTICS</p><h1>{{ pod_name }}</h1><p class="muted">Хувилбар, container төлөв, events болон лог.</p></div><button id="refreshDetails" class="button">↻ Дэлгэрэнгүй шинэчлэх</button></section>
+<p id="detailsStatus" class="muted" role="status"></p>
+<section class="panel feature-panel"><div class="panel-heading"><h2>Deployment хувилбар</h2></div><dl id="deploymentDetails" class="detail-grid"></dl><div class="table-scroll"><table><thead><tr><th>Container</th><th>Image / Image ID</th><th>Төлөв</th><th>Өмнөх төлөв</th></tr></thead><tbody id="containerRows"></tbody></table></div></section>
+<section class="panel feature-panel"><div class="panel-heading"><h2>Pod events</h2><span class="muted">Сүүлийн 100 event</span></div><p id="eventsStatus" class="feature-message" role="status"></p><div class="table-scroll"><table><thead><tr><th>Хугацаа</th><th>Төрөл</th><th>Шалтгаан</th><th>Тайлбар</th><th>Тоо</th></tr></thead><tbody id="eventRows"></tbody></table></div></section>
+<section class="panel feature-panel"><div class="panel-heading"><h2>Лог</h2><button id="refreshLogs" class="button">↻ Лог татах</button></div>
+<form id="logFilters" class="qa-filters">
+<label>Container<select id="logContainer"><option value="">Үндсэн container</option></select></label>
+<label>Эх үүсвэр<select id="logSource"><option value="0">Одоогийн</option><option value="1">Өмнөх container</option></select></label>
+<label>Хугацаа<select id="logSince"><option value="5m">5 минут</option><option value="15m">15 минут</option><option value="1h" selected>1 цаг</option><option value="6h">6 цаг</option><option value="24h">24 цаг</option><option value="all">Хязгаарлахгүй</option></select></label>
+<label>Мөр<select id="logTail"><option>500</option><option selected>1000</option><option>5000</option></select></label>
+<label>Түвшин<select id="logLevel"><option value="all">Бүгд</option><option>ERROR</option><option>WARN</option><option>INFO</option><option>DEBUG</option><option>TRACE</option></select></label>
+<label class="grow">Текст / trace ID<input id="logQuery" type="search" maxlength="200" placeholder="Алдаа, trace ID…"></label><button class="button primary" type="submit">Шүүх</button>
+</form>
+<p id="logsStatus" class="feature-message" role="status"></p><pre id="logOutput" class="log-panel embedded-log" tabindex="0" aria-label="Pod logs">Лог татаж байна…</pre>
+<div class="panel-footer"><span>Хайлт нь татсан мөрүүдэд үйлчилнэ. Өмнөх container-ийн лог устсан pod-ийн архив биш.</span><div class="row-actions"><button id="downloadLogs" class="button" disabled>Лог татах ↓</button><button id="buildReport" class="button">Bug report бэлдэх</button></div></div>
+</section>
 </main>
-</body>
-</html>
+<dialog id="reportModal" class="wide-dialog" aria-labelledby="reportTitle"><div class="dialog-heading"><h2 id="reportTitle">Bug report</h2><button id="closeReport" class="icon-button" aria-label="Хаах">×</button></div><p class="muted">Давтах алхам, хүлээгдсэн үр дүнгээ бичээд хуулж эсвэл файл болгон татна уу. Хавсаргах логийн агуулгыг нягтлаарай.</p><textarea id="reportText" class="report-editor" aria-label="Bug report текст"></textarea><p id="reportStatus" role="status"></p><div class="dialog-footer"><button id="copyReport" class="button">Хуулах</button><button id="downloadReport" class="button primary">Markdown татах ↓</button></div></dialog>
+</body></html>

@@ -18,7 +18,8 @@ spec:
         - name: registry2
       containers:
         - name: qa-support-web-pod
-          image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.6
+          # image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.6
+          image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.7
           imagePullPolicy: Always
           envFrom:
             - secretRef:
@@ -28,7 +29,7 @@ spec:
             - containerPort: 5000
           resources:
             limits:
-              cpu: "2"
+              cpu: "6"
               memory: "8Gi"
             requests:
               cpu: "250m"

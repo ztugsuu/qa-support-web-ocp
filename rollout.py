@@ -1,5 +1,6 @@
 """Deployment restart eligibility, shared by the dashboard and write endpoint."""
 from datetime import datetime, timezone
+from math import ceil
 
 # A recovered container must remain running this long before another rollout.
 RESTART_STABILITY_SECONDS = 300
@@ -19,9 +20,6 @@ def pod_block_reason(pod, now=None):
         return 'Pod устаж байна.'
     if status.get('phase') != 'Running':
         return 'Pod бүрэн асаагүй байна.'
-    if not any(c.get('type') == 'Ready' and c.get('status') == 'True'
-               for c in status.get('conditions', [])):
-        return 'Pod Ready болоогүй байна.'
     for spec_key, status_key in [('containers', 'containerStatuses'),
                                  ('initContainers', 'initContainerStatuses')]:
         statuses = {c['name']: c for c in status.get(status_key, [])}
@@ -35,17 +33,24 @@ def pod_block_reason(pod, now=None):
             if spec_key == 'initContainers' and container.get('restartPolicy') != 'Always':
                 if state.get('terminated', {}).get('exitCode') == 0:
                     continue
-                return 'Init container бүрэн асаагүй байна.'
+                return f"Init container {container['name']} бүрэн асаагүй байна."
             if not current.get('ready') or 'running' not in state or current.get('started') is False:
-                return 'Container бэлэн биш эсвэл дахин асаж байна.'
+                detail = state.get('waiting', {}).get('reason') or state.get('terminated', {}).get('reason') or 'NotReady'
+                return f"Container {container['name']}: {detail}."
             if current.get('restartCount', 0) > 0:
                 try:
                     started = datetime.fromisoformat(state['running']['startedAt'].replace('Z', '+00:00'))
-                    stable = (now - started).total_seconds() >= RESTART_STABILITY_SECONDS
+                    elapsed = (now - started).total_seconds()
+                    stable = elapsed >= RESTART_STABILITY_SECONDS
+                    remaining = max(0, ceil(RESTART_STABILITY_SECONDS - elapsed))
                 except (KeyError, ValueError, TypeError):
                     stable = False
+                    remaining = RESTART_STABILITY_SECONDS
                 if not stable:
-                    return 'Restart хийсэн container 5 минут тогтвортой ажиллахыг хүлээж байна.'
+                    return f"Container {container['name']}: restart-ийн дараа 5 минут тогтвортой ажиллахыг хүлээж байна ({remaining} сек үлдсэн)."
+    if not any(c.get('type') == 'Ready' and c.get('status') == 'True'
+               for c in status.get('conditions', [])):
+        return 'Pod Ready болоогүй байна (readiness gate эсвэл node төлөв).'
     return None
 
 
@@ -76,7 +81,11 @@ def deployment_states(deployments, replica_sets, pods):
         elif len(owned) != desired:
             reason = 'Бүх pod бүрэн асаж, хуучин pod устахыг хүлээж байна.'
         else:
-            reason = next((reason for p in owned if (reason := pod_block_reason(p))), None)
+            for pod in owned:
+                blocked = pod_block_reason(pod)
+                if blocked:
+                    reason = f"{pod['metadata']['name']}: {blocked}"
+                    break
         states[metadata['uid']] = {
             'deployment': metadata['name'], 'can_restart': reason is None,
             'restart_reason': reason or 'Бүх pod бэлэн. Rollout restart хийх боломжтой.',
