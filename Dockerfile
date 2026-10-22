@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 5. Source copy
 COPY app.py .
+COPY swagger_routes.py .
 COPY rollout.py .
 COPY allowlist.py .
 COPY qa_features.py audit.py ./

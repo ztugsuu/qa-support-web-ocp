@@ -19,8 +19,15 @@ spec:
       containers:
         - name: qa-support-web-pod
           # image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.6
-          image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.7
+          image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.2.1
           imagePullPolicy: Always
+          env:
+            - name: QA_SWAGGER_KUBECONFIG
+              value: /etc/qa-swagger/kubeconfig
+          volumeMounts:
+            - name: swagger-kubeconfig
+              mountPath: /etc/qa-swagger
+              readOnly: true
           envFrom:
             - secretRef:
                 name: qa-support-db
@@ -34,3 +41,7 @@ spec:
             requests:
               cpu: "250m"
               memory: "256Mi"
+      volumes:
+        - name: swagger-kubeconfig
+          secret:
+            secretName: qa-swagger-kubeconfig

@@ -1,3 +1,4 @@
 manifests/db.env
 __pycache__/
 *.pyc
+manifests/swagger.kubeconfig

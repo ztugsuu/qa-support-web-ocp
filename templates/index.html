@@ -7,7 +7,7 @@
 <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="/"><span class="brand-mark">Q</span> QA Console <span class="environment">QA ENVIRONMENT</span></a><nav class="row-actions"><a class="button" href="/qa">QA хэрэгслүүд</a><a class="button" href="/allowlist">Email / SMS Бүртгэх</a></nav></header>
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">Q</span> QA Console <span class="environment">QA ENVIRONMENT</span></a><nav class="row-actions"><a class="button" href="/swagger">Swagger</a><a class="button" href="/qa">QA хэрэгслүүд</a><a class="button" href="/allowlist">Email / SMS Бүртгэх</a></nav></header>
 <main class="workspace">
 <div class="breadcrumb">Workspace <span>/</span> Pod overview</div>
 <section class="page-heading"><div><p class="eyebrow">WORKLOADS</p><h1>Pod хяналтын самбар</h1><p class="muted">Микросервисүүдийн төлөв, нөөц ашиглалт, логийг нэг дороос.</p></div><div class="namespace-field"><label for="namespaceSelect">Namespace</label><select id="namespaceSelect">{% for ns in namespaces %}<option value="{{ ns }}">{{ ns }}</option>{% endfor %}</select></div></section>

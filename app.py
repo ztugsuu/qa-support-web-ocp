@@ -8,6 +8,8 @@ from qa_features import register_qa, deployment_info
 from audit import register_audit
 
 app = Flask(__name__)
+from swagger_routes import swagger_bp
+app.register_blueprint(swagger_bp)
 app.config['MAX_CONTENT_LENGTH'] = 65536
 from allowlist import allowlist_bp
 app.register_blueprint(allowlist_bp)

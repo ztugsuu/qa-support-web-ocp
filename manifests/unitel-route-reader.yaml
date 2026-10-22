@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: swagger-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: unitel-route-reader
+  namespace: swagger-reader
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: swagger-route-reader
+rules:
+  - apiGroups:
+      - route.openshift.io
+    resources:
+      - routes
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: swagger-route-reader-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: swagger-route-reader
+subjects:
+  - kind: ServiceAccount
+    name: unitel-route-reader
+    namespace: swagger-reader
