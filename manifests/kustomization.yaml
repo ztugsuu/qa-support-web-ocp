@@ -6,7 +6,3 @@ namespace: pre-new-ms
 resources:
   - deploy.yaml
   - svc.yaml
-secretGenerator:
-  - name: qa-support-db
-    envs:
-      - db.env

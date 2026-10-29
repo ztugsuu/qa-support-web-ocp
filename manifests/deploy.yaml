@@ -19,12 +19,26 @@ spec:
       containers:
         - name: qa-support-web-pod
           # image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.6
-          image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.1.7
+          image: securereg2.m-bank.mn:5000/qa-support-web-pod:1.2.2
           imagePullPolicy: Always
-          envFrom:
-            - secretRef:
-                name: qa-support-db
-                optional: false
+          env:
+            - name: QA_SWAGGER_KUBECONFIG
+              value: /etc/qa-swagger/kubeconfig
+          volumeMounts:
+            - name: swagger-kubeconfig
+              mountPath: /etc/qa-swagger
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 20
           ports:
             - containerPort: 5000
           resources:
@@ -34,3 +48,7 @@ spec:
             requests:
               cpu: "250m"
               memory: "256Mi"
+      volumes:
+        - name: swagger-kubeconfig
+          secret:
+            secretName: qa-swagger-kubeconfig

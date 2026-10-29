@@ -1,0 +1,13 @@
+4. Хоёр cluster-ийн Token авах
+ServiceAccount үүсгэсний дараа token гаргана.
+Unitel token
+oc login https://api.testocp.mbank.local:6443
+
+oc create token unitel-route-reader `
+  -n swagger-reader `
+  --duration=240h
+
+
+  oc create token mogul-route-reader `
+  -n swagger-reader `
+  --duration=240h

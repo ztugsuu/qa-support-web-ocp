@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="mn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Swagger · M bank</title><link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}"><script src="{{ url_for('static', filename='swagger.js') }}" defer></script></head>
+<body><header class="topbar"><a class="brand" href="/"><span class="brand-mark">M</span> Swagger</a></header>
+<main class="workspace"><section class="page-heading"><div><p class="eyebrow">API DOCUMENTATION</p><h1>Swagger</h1><p class="muted">Unitel / Mogul орчны сервисүүдийн холбоос.</p></div></section>
+<section class="panel"><div class="panel-heading"><h2>Сервисүүд</h2><button class="button" id="refreshSwagger">↻ Шинэчлэх</button></div><div class="toolbar"><div class="search-field"><input id="swaggerSearch" type="search" placeholder="Сервис эсвэл route нэрээр хайх…" aria-label="Сервис хайх"></div><select id="swaggerNamespace" aria-label="Namespace"><option>test-ms</option><option>pre-new-ms</option></select></div>
+<p class="feature-message muted">Холбоос шинэ tab-д нээгдэнэ. Swagger замыг service нэрээр үүсгэсэн; ажиллаж байгааг шалгаагүй.</p><p id="swaggerStatus" class="feature-message" role="status" aria-live="polite"></p>
+<div class="table-scroll"><table><thead><tr><th>Сервис</th><th>Unitel · testocp</th><th>Mogul · testmogul</th></tr></thead><tbody id="swaggerRows"></tbody></table></div></section></main></body></html>

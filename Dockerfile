@@ -19,11 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 5. Source copy
 COPY app.py .
-COPY rollout.py .
-COPY allowlist.py .
-COPY qa_features.py audit.py ./
-COPY config/ ./config/
-COPY sql/ ./sql/
+COPY swagger_cache.py .
 COPY templates/ ./templates/
 COPY static/ ./static/
 
@@ -32,4 +28,4 @@ EXPOSE 5000
 
 # 7. Run app (gunicorn-оор ажиллуулах)
 # requirements.txt дотор 'gunicorn' орсон эсэхийг шалгаарай
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--worker-class", "gthread", "--threads", "16", "--timeout", "30", "--access-logfile", "-", "app:app"]
